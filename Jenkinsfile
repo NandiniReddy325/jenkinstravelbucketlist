@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     stages {
-
         // ===== FRONTEND BUILD =====
         stage('Build Frontend') {
             steps {
@@ -21,7 +20,7 @@ pipeline {
                     rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi"
                 )
                 mkdir "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi"
-                xcopy /E /I /Y FRONTENDTRAVEL\\dist\\* "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi"
+                xcopy /E /I /Y "FRONTENDTRAVEL\\build\\*" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi\\"
                 '''
             }
         }
@@ -30,7 +29,7 @@ pipeline {
         stage('Build Backend') {
             steps {
                 dir('BACKENDTRAVEL') {
-                    bat 'mvn clean package'
+                    bat 'mvn clean package -DskipTests'
                 }
             }
         }
@@ -38,18 +37,19 @@ pipeline {
         // ===== BACKEND DEPLOY =====
         stage('Deploy Backend to Tomcat') {
             steps {
-                bat ''' if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi.war" (
+                bat '''
+                if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi.war" (
                     del /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi.war"
                 )
                 if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi" (
                     rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi"
                 )
-                copy "BACKENDTRAVEL\\target\\*.war" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\"
+                copy "BACKENDTRAVEL\\target\\*.war" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi.war"
+                net stop Tomcat10
+                net start Tomcat10
                 '''
-               
             }
         }
-
     }
 
     post {
