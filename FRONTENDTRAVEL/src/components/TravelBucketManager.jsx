@@ -104,7 +104,7 @@ const TravelBucketManager = () => {
         </div>
       )}
 
-      <h2>🌍 Travel Bucket List Manager</h2>
+      <h2>🌍 Travel Bucket List Manager-Practice</h2>
 
       <div className="form-grid">
         <input
