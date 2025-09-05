@@ -1,0 +1,34 @@
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/travelapi")
+@CrossOrigin(origins = "*") // ✅ Allow React frontend
+public class TravelPlaceController {
+
+    @Autowired
+    private TravelPlaceRepository repo;
+
+    @PostMapping("/add")
+    public TravelPlace addPlace(@RequestBody TravelPlace place) {
+        place.setId(null); // ✅ let DB auto-generate ID
+        return repo.save(place);
+    }
+
+    @PutMapping("/update")
+    public TravelPlace updatePlace(@RequestBody TravelPlace place) {
+        return repo.save(place); // ✅ works if ID exists
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public String deletePlace(@PathVariable Integer id) {
+        repo.deleteById(id);
+        return "Deleted successfully.";
+    }
+
+    @GetMapping("/all")
+    public List<TravelPlace> getAllPlaces() {
+        return repo.findAll();
+    }
+}

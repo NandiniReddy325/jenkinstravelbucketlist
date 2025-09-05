@@ -1,0 +1,48 @@
+package com.klef.dev.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "travel_places")
+public class TravelPlace {
+
+    @Id
+    @Column(name = "place_id")
+    private int id;
+
+    @Column(name = "destination", nullable = false, length = 100)
+    private String destination;
+
+    @Column(name = "country", nullable = false, length = 50)
+    private String country;
+
+    @Column(name = "notes", length = 255)
+    private String notes;
+
+    @Column(name = "visited", nullable = false, length = 5)
+    private String visited;  // "YES" or "NO"
+
+    // Getters and Setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public String getDestination() { return destination; }
+    public void setDestination(String destination) { this.destination = destination; }
+
+    public String getCountry() { return country; }
+    public void setCountry(String country) { this.country = country; }
+
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
+
+    public String getVisited() { return visited; }
+    public void setVisited(String visited) { this.visited = visited; }
+
+    @Override
+    public String toString() {
+        return "TravelPlace [id=" + id + ", destination=" + destination + ", country=" + country + ", notes=" + notes + ", visited=" + visited + "]";
+    }
+}

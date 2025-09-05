@@ -1,0 +1,75 @@
+package com.klef.dev.controller;
+
+import com.klef.dev.entity.TravelPlace;
+import com.klef.dev.repository.TravelPlaceRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/travelapi")
+@CrossOrigin(origins = "*")
+public class TravelPlaceController {
+
+    @Autowired
+    private TravelPlaceRepository repository;
+
+    // Home test endpoint
+    @GetMapping("/")
+    public String home() {
+        return "Travel API is running 🚀";
+    }
+
+    // Add a new travel place
+    @PostMapping("/add")
+    public ResponseEntity<TravelPlace> addPlace(@RequestBody TravelPlace place) {
+        TravelPlace savedPlace = repository.save(place);
+        return new ResponseEntity<>(savedPlace, HttpStatus.CREATED);
+    }
+
+    // Get all places
+    @GetMapping("/all")
+    public ResponseEntity<List<TravelPlace>> getAllPlaces() {
+        List<TravelPlace> places = repository.findAll();
+        return new ResponseEntity<>(places, HttpStatus.OK);
+    }
+
+    // Get place by ID
+    @GetMapping("/get/{id}")
+    public ResponseEntity<?> getPlaceById(@PathVariable int id) {
+        Optional<TravelPlace> place = repository.findById(id);
+        if (place.isPresent()) {
+            return new ResponseEntity<>(place.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Place with ID " + id + " not found.", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // Update a place
+    @PutMapping("/update")
+    public ResponseEntity<?> updatePlace(@RequestBody TravelPlace place) {
+        Optional<TravelPlace> existing = repository.findById(place.getId());
+        if (existing.isPresent()) {
+            TravelPlace updated = repository.save(place);
+            return new ResponseEntity<>(updated, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Cannot update. Place with ID " + place.getId() + " not found.", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // Delete place by ID
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deletePlace(@PathVariable int id) {
+        Optional<TravelPlace> existing = repository.findById(id);
+        if (existing.isPresent()) {
+            repository.deleteById(id);
+            return new ResponseEntity<>("Place with ID " + id + " deleted successfully.", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Cannot delete. Place with ID " + id + " not found.", HttpStatus.NOT_FOUND);
+        }
+    }
+}

@@ -1,0 +1,67 @@
+package com.klef.dev.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import com.klef.dev.entity.TravelPlace;
+import com.klef.dev.service.TravelPlaceService;
+
+@RestController
+@RequestMapping("/travelapi")
+@CrossOrigin(origins = "*")
+public class TravelPlaceController {
+
+    @Autowired
+    private TravelPlaceService service;
+
+    @GetMapping("/")
+    public String home() {
+        return "Travel Bucket List API is Running 🚀";
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<TravelPlace> addPlace(@RequestBody TravelPlace place) {
+        TravelPlace saved = service.addPlace(place);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<TravelPlace>> getAllPlaces() {
+        return new ResponseEntity<>(service.getAllPlaces(), HttpStatus.OK);
+    }
+
+    @GetMapping("/get/{id}")
+    public ResponseEntity<?> getPlaceById(@PathVariable int id) {
+        TravelPlace place = service.getPlaceById(id);
+        if (place != null) {
+            return new ResponseEntity<>(place, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Place with ID " + id + " not found.", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> updatePlace(@RequestBody TravelPlace place) {
+        TravelPlace existing = service.getPlaceById(place.getId());
+        if (existing != null) {
+            return new ResponseEntity<>(service.updatePlace(place), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Cannot update. Place with ID " + place.getId() + " not found.", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deletePlace(@PathVariable int id) {
+        TravelPlace existing = service.getPlaceById(id);
+        if (existing != null) {
+            service.deletePlaceById(id);
+            return new ResponseEntity<>("Place with ID " + id + " deleted successfully.", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Cannot delete. Place with ID " + id + " not found.", HttpStatus.NOT_FOUND);
+        }
+    }
+}

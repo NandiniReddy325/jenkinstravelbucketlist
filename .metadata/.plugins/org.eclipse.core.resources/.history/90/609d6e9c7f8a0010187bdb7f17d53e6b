@@ -1,0 +1,27 @@
+package com.klef.dev.controller;
+
+import com.klef.dev.entity.TravelPlace;   // ✅ required
+import com.klef.dev.repository.TravelPlaceRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/travel")
+@CrossOrigin(origins = "htt")
+public class TravelPlaceController {
+
+    @Autowired
+    private TravelPlaceRepository repository;
+
+    @PostMapping("/add")
+    public TravelPlace addPlace(@RequestBody TravelPlace place) {
+        return repository.save(place);
+    }
+
+    @GetMapping("/all")
+    public List<TravelPlace> getAllPlaces() {
+        return repository.findAll();
+    }
+}
