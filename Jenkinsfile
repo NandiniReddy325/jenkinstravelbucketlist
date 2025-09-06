@@ -63,11 +63,6 @@
 // }
 
 
-
-
-
-
-
 pipeline {
     agent any
 
@@ -85,12 +80,15 @@ pipeline {
         // ===== FRONTEND DEPLOY =====
         stage('Deploy Frontend to Tomcat') {
             steps {
-                bat '''
-                if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi" (
-                    rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi"
-                )
-                mkdir "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi"
-                robocopy "FRONTENDTRAVEL\\dist" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi" /E
+                powershell '''
+                $dest = "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi"
+
+                if (Test-Path $dest) {
+                    Remove-Item -Recurse -Force $dest
+                }
+                New-Item -ItemType Directory -Force -Path $dest | Out-Null
+
+                Copy-Item -Path "FRONTENDTRAVEL\\dist\\*" -Destination $dest -Recurse -Force
                 '''
             }
         }
@@ -107,14 +105,20 @@ pipeline {
         // ===== BACKEND DEPLOY =====
         stage('Deploy Backend to Tomcat') {
             steps {
-                bat '''
-                if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi.war" (
-                    del /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi.war"
-                )
-                if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi" (
-                    rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi"
-                )
-                copy "BACKENDTRAVEL\\target\\*.war" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi.war"
+                powershell '''
+                $tomcatWebapps = "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps"
+                $warFile = "$tomcatWebapps\\springboottravelapi.war"
+                $explodedDir = "$tomcatWebapps\\springboottravelapi"
+
+                if (Test-Path $warFile) {
+                    Remove-Item -Force $warFile
+                }
+                if (Test-Path $explodedDir) {
+                    Remove-Item -Recurse -Force $explodedDir
+                }
+
+                Copy-Item -Path "BACKENDTRAVEL\\target\\*.war" -Destination $warFile -Force
+
                 net stop Tomcat10
                 net start Tomcat10
                 '''
@@ -131,3 +135,10 @@ pipeline {
         }
     }
 }
+
+
+
+
+
+
+
