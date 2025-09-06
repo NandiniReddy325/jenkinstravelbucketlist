@@ -29,7 +29,7 @@ pipeline {
         stage('Build Backend') {
             steps {
                 dir('BACKENDTRAVEL') {
-                    bat 'mvn clean package -DskipTests'
+                    bat 'mvn clean package '
                 }
             }
         }
@@ -44,9 +44,8 @@ pipeline {
                 if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi" (
                     rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi"
                 )
-                copy "BACKENDTRAVEL\\target\\*.war" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi.war"
-                net stop Tomcat10
-                net start Tomcat10
+                copy "BACKENDTRAVEL\\target\\*.war" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\"
+                
                 '''
             }
         }
