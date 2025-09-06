@@ -1,68 +1,3 @@
-// pipeline {
-//     agent any
-
-//     stages {
-//         // ===== FRONTEND BUILD =====
-//         stage('Build Frontend') {
-//             steps {
-//                 dir('FRONTENDTRAVEL') {
-//                     bat 'npm install'
-//                     bat 'npm run build'
-//                 }
-//             }
-//         }
-
-//         // ===== FRONTEND DEPLOY =====
-//         stage('Deploy Frontend to Tomcat') {
-//             steps {
-//                 bat '''
-//                 if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi" (
-//                     rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi"
-//                 )
-//                 mkdir "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi"
-//                 xcopy /E /I /Y "FRONTENDTRAVEL\\build\\*" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi\\"
-//                 '''
-//             }
-//         }
-
-//         // ===== BACKEND BUILD =====
-//         stage('Build Backend') {
-//             steps {
-//                 dir('BACKENDTRAVEL') {
-//                     bat 'mvn clean package -DskipTests'
-//                 }
-//             }
-//         }
-
-//         // ===== BACKEND DEPLOY =====
-//         stage('Deploy Backend to Tomcat') {
-//             steps {
-//                 bat '''
-//                 if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi.war" (
-//                     del /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi.war"
-//                 )
-//                 if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi" (
-//                     rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi"
-//                 )
-//                 copy "BACKENDTRAVEL\\target\\*.war" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi.war"
-//                 net stop Tomcat10
-//                 net start Tomcat10
-//                 '''
-//             }
-//         }
-//     }
-
-//     post {
-//         success {
-//             echo 'Deployment Successful!'
-//         }
-//         failure {
-//             echo 'Pipeline Failed.'
-//         }
-//     }
-// }
-
-
 pipeline {
     agent any
 
@@ -80,15 +15,12 @@ pipeline {
         // ===== FRONTEND DEPLOY =====
         stage('Deploy Frontend to Tomcat') {
             steps {
-                powershell '''
-                $dest = "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi"
-
-                if (Test-Path $dest) {
-                    Remove-Item -Recurse -Force $dest
-                }
-                New-Item -ItemType Directory -Force -Path $dest | Out-Null
-
-                Copy-Item -Path "FRONTENDTRAVEL\\dist\\*" -Destination $dest -Recurse -Force
+                bat '''
+                if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi" (
+                    rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi"
+                )
+                mkdir "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi"
+                xcopy /E /I /Y "FRONTENDTRAVEL\\build\\*" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi\\"
                 '''
             }
         }
@@ -105,20 +37,14 @@ pipeline {
         // ===== BACKEND DEPLOY =====
         stage('Deploy Backend to Tomcat') {
             steps {
-                powershell '''
-                $tomcatWebapps = "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps"
-                $warFile = "$tomcatWebapps\\springboottravelapi.war"
-                $explodedDir = "$tomcatWebapps\\springboottravelapi"
-
-                if (Test-Path $warFile) {
-                    Remove-Item -Force $warFile
-                }
-                if (Test-Path $explodedDir) {
-                    Remove-Item -Recurse -Force $explodedDir
-                }
-
-                Copy-Item -Path "BACKENDTRAVEL\\target\\*.war" -Destination $warFile -Force
-
+                bat '''
+                if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi.war" (
+                    del /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi.war"
+                )
+                if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi" (
+                    rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi"
+                )
+                copy "BACKENDTRAVEL\\target\\*.war" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi.war"
                 net stop Tomcat10
                 net start Tomcat10
                 '''
@@ -128,13 +54,15 @@ pipeline {
 
     post {
         success {
-            echo '✅ Deployment Successful!'
+            echo 'Deployment Successful!'
         }
         failure {
-            echo '❌ Pipeline Failed.'
+            echo 'Pipeline Failed.'
         }
     }
 }
+
+
 
 
 
