@@ -1,5 +1,5 @@
 const config = {
-   url: "http://localhost:3835/springboottravelapi"
+   url: "http://localhost:2030/springboottravelapi"
    
 
 };
