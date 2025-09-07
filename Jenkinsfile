@@ -20,8 +20,8 @@ pipeline {
                     rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi"
                 )
                 mkdir "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi"
-               copy /Y "%WORKSPACE%\\FRONTENDTRAVEL\\dist\\." "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi\\"
-copy /Y "%WORKSPACE%\\FRONTENDTRAVEL\\dist\\assets\\." "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi\\"
+               copy /Y "%WORKSPACE%\\FRONTENDTRAVEL\\dist\\*.*" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi\\"
+copy /Y "%WORKSPACE%\\FRONTENDTRAVEL\\dist\\assets\\*.*" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi\\"
                 '''
             }
         }
