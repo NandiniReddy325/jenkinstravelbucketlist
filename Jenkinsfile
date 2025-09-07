@@ -20,9 +20,7 @@ pipeline {
                     rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi"
                 )
                 mkdir "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi"
-                robocopy "FRONTENDTRAVEL\build" "C:\Program Files\Apache Software Foundation\Tomcat 10.1\webapps\reacttravelapi" /E
-                '''
-            }
+               robocopy "FRONTENDTRAVEL\\dist" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi" /E
         }
 
         // ===== BACKEND BUILD =====
