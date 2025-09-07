@@ -20,14 +20,16 @@ pipeline {
                     rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi"
                 )
                 mkdir "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi"
-               robocopy "FRONTENDTRAVEL\\dist" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi" /E
+                robocopy "FRONTENDTRAVEL\\dist" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reacttravelapi" /E
+                '''
+            }
         }
 
         // ===== BACKEND BUILD =====
         stage('Build Backend') {
             steps {
                 dir('BACKENDTRAVEL') {
-                    bat 'mvn clean package '
+                    bat 'mvn clean package'
                 }
             }
         }
@@ -43,7 +45,6 @@ pipeline {
                     rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springboottravelapi"
                 )
                 copy "BACKENDTRAVEL\\target\\*.war" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\"
-                
                 '''
             }
         }
@@ -58,12 +59,3 @@ pipeline {
         }
     }
 }
-
-
-
-
-
-
-
-
-
