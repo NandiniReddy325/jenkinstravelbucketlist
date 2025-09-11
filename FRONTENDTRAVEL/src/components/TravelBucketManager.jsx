@@ -17,7 +17,6 @@ const TravelBucketManager = () => {
   const [message, setMessage] = useState('');
   const [editMode, setEditMode] = useState(false);
 
-  // ✅ baseUrl matches Spring Boot RequestMapping
   const baseUrl = `${config.url}/travelapi`;
 
   useEffect(() => {
@@ -29,7 +28,7 @@ const TravelBucketManager = () => {
       const res = await axios.get(`${baseUrl}/all`);
       setPlaces(res.data);
     } catch (error) {
-      setMessage('Failed to fetch travel destinations.');
+      setMessage('Failed to fetch travel journeys.');
     }
   };
 
@@ -39,7 +38,7 @@ const TravelBucketManager = () => {
 
   const validateForm = () => {
     if (!place.destination || !place.country) {
-      setMessage('⚠ Please fill required fields: Destination & Country');
+      setMessage('⚠ Please fill required fields: From (State / Country) & To (Travel Destination)');
       return false;
     }
     return true;
@@ -55,12 +54,12 @@ const TravelBucketManager = () => {
         visited: place.visited
       };
       await axios.post(`${baseUrl}/add`, payload);
-      setMessage('✅ Destination added successfully!');
+      setMessage('✅ Travel journey added successfully!');
       fetchAllPlaces();
       resetForm();
     } catch (error) {
       console.error("Add error:", error);
-      setMessage('❌ Error adding destination');
+      setMessage('❌ Error adding travel journey');
     }
   };
 
@@ -72,23 +71,23 @@ const TravelBucketManager = () => {
     if (!validateForm()) return;
     try {
       await axios.put(`${baseUrl}/update`, place);
-      setMessage('✅ Destination updated successfully!');
+      setMessage('✅ Travel journey updated successfully!');
       fetchAllPlaces();
       resetForm();
     } catch (error) {
       console.error("Update error:", error);
-      setMessage('❌ Error updating destination');
+      setMessage('❌ Error updating travel journey');
     }
   };
 
   const deletePlace = async (id) => {
     try {
       const res = await axios.delete(`${baseUrl}/delete/${id}`);
-      setMessage(res.data || '✅ Destination deleted successfully!');
+      setMessage(res.data || '✅ Travel journey deleted successfully!');
       fetchAllPlaces();
     } catch (error) {
       console.error("Delete error:", error);
-      setMessage('❌ Error deleting destination');
+      setMessage('❌ Error deleting travel journey');
     }
   };
 
@@ -103,14 +102,14 @@ const TravelBucketManager = () => {
       setMessage('');
     } catch (error) {
       setFetchedPlace(null);
-      setMessage('Destination not found.');
+      setMessage('Travel journey not found.');
     }
   };
 
   const handleEdit = (p) => {
     setPlace(p);
     setEditMode(true);
-    setMessage(`Editing destination with ID ${p.id}`);
+    setMessage(`Editing travel journey with ID ${p.id}`);
   };
 
   const resetForm = () => {
@@ -139,11 +138,29 @@ const TravelBucketManager = () => {
       <h2>🌍 Travel Bucket List Manager</h2>
 
       <div>
-        <h3>{editMode ? 'Edit Destination' : 'Add Destination'}</h3>
+        <h3>{editMode ? 'Edit Travel Journey' : 'Add Travel Journey'}</h3>
         <div className="form-grid">
-          <input type="text" name="destination" placeholder="Destination" value={place.destination} onChange={handleChange} />
-          <input type="text" name="country" placeholder="Country" value={place.country} onChange={handleChange} />
-          <input type="text" name="notes" placeholder="Notes" value={place.notes} onChange={handleChange} />
+          <input
+            type="text"
+            name="country"
+            placeholder="From (State / Country)"
+            value={place.country}
+            onChange={handleChange}
+          />
+          <input
+            type="text"
+            name="destination"
+            placeholder="To (Travel Destination)"
+            value={place.destination}
+            onChange={handleChange}
+          />
+          <input
+            type="text"
+            name="notes"
+            placeholder="Notes"
+            value={place.notes}
+            onChange={handleChange}
+          />
           <select name="visited" value={place.visited} onChange={handleChange}>
             <option value="NO">Not Visited</option>
             <option value="YES">Visited</option>
@@ -152,18 +169,18 @@ const TravelBucketManager = () => {
 
         <div className="btn-group">
           {!editMode ? (
-            <button className="btn-blue" onClick={addPlace}>➕ Add Destination</button>
+            <button className="btn-blue" onClick={addPlace}>➕ Add Travel Journey</button>
           ) : (
             <>
-              <button className="btn-green" onClick={updatePlace}>✏ Update Destination</button>
+              <button className="btn-green" onClick={updatePlace}>✏ Update Travel Journey</button>
               <button className="btn-gray" onClick={resetForm}>Cancel</button>
             </>
           )}
         </div>
       </div>
 
-      <div>
-        <h3>Get Destination By ID</h3>
+      <div className="fetch-wrapper">
+        <h3>Get Travel Journey By ID</h3>
         <input
           type="number"
           value={idToFetch}
@@ -174,33 +191,37 @@ const TravelBucketManager = () => {
 
         {fetchedPlace && (
           <div>
-            <h4>Destination Found:</h4>
+            <h4>Travel Journey Found:</h4>
             <pre>{JSON.stringify(fetchedPlace, null, 2)}</pre>
           </div>
         )}
       </div>
 
       <div>
-        <h3>All Destinations</h3>
+        <h3>All Travel Journeys</h3>
         {places.length === 0 ? (
-          <p>No destinations found.</p>
+          <p>No travel journeys found.</p>
         ) : (
           <div className="table-wrapper">
             <table>
               <thead>
                 <tr>
-                  {Object.keys(place).map((key) => (
-                    <th key={key}>{key}</th>
-                  ))}
+                  <th>ID</th>
+                  <th>From (State / Country)</th>
+                  <th>To (Travel Destination)</th>
+                  <th>Notes</th>
+                  <th>Visited</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {places.map((p) => (
                   <tr key={p.id}>
-                    {Object.keys(place).map((key) => (
-                      <td key={key}>{p[key]}</td>
-                    ))}
+                    <td>{p.id}</td>
+                    <td>{p.country}</td>
+                    <td>{p.destination}</td>
+                    <td>{p.notes}</td>
+                    <td>{p.visited}</td>
                     <td>
                       <div className="action-buttons">
                         <button className="btn-green" onClick={() => handleEdit(p)}>Edit</button>
